@@ -1,4 +1,4 @@
-package model;
+package bsu.model;
 
 /**
  * @author saniaky

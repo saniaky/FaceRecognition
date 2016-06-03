@@ -1,4 +1,4 @@
-package utils;
+package bsu.utils;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
@@ -68,21 +68,8 @@ public abstract class MatUtils {
      */
     public static Image mat2Image(Mat frame) {
         MatOfByte buffer = new MatOfByte();
-
         imencode(".bmp", frame, buffer);
-
-//        long startTime = System.currentTimeMillis();
-
-//        toBufferedImage(frame);
-
-//        long endTime = System.currentTimeMillis();
-//        String executionTime = String.valueOf(endTime - startTime);
-//        Scalar green = new Scalar(0, 255, 0);
-//        Imgproc.putText(frame, executionTime, new Point(100, 100), 2, 2, green, 2);
-
-        BufferedImage bufferedImage = toBufferedImage(frame);
-
-        return SwingFXUtils.toFXImage(bufferedImage, null);
+        return SwingFXUtils.toFXImage(toBufferedImage(frame), null);
     }
 
     /**

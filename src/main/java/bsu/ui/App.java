@@ -1,4 +1,7 @@
+package bsu.ui;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -16,9 +19,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("ui/app.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/app.fxml"));
         BorderPane rootElement = loader.load();
         Scene scene = new Scene(rootElement, 800, 600);
+
+        primaryStage.setOnCloseRequest(t -> {
+            Platform.exit();
+            System.exit(0);
+        });
 
         primaryStage.setTitle("Java and OpenCV");
         primaryStage.setScene(scene);
