@@ -15,6 +15,7 @@ import org.opencv.objdetect.Objdetect;
 import org.opencv.videoio.VideoCapture;
 import utils.MatUtils;
 
+import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,11 +41,19 @@ public class AppController {
     private CascadeType cascadeType;
     private int minFaceSize;
 
+    private OpenCVFaceRecognizer faceRecognizer;
+    private HashMap<Integer, String> names;
+    public static final Scalar GREEN = new Scalar(0, 255, 0);
+
     public AppController() {
         cameraActive = false;
         faceCascade = new CascadeClassifier();
         capture = new VideoCapture();
 
+        faceRecognizer = new OpenCVFaceRecognizer();
+        names = new HashMap<>();
+        names.put(1, "Sasha");
+        names.put(2, "Oleg");
     }
 
     public void startCamera() throws InterruptedException {
@@ -138,9 +147,21 @@ public class AppController {
                 new Size(minFaceSize, minFaceSize), new Size());
 
         // each rectangle in faces is a face: draw them!
-        Scalar green = new Scalar(0, 255, 0);
         for (Rect faceCoordinates : faces.toArray()) {
-            Imgproc.rectangle(frame, faceCoordinates.tl(), faceCoordinates.br(), green, 2);
+            Imgproc.rectangle(frame, faceCoordinates.tl(), faceCoordinates.br(), GREEN, 2);
+
+            int rowStart = faceCoordinates.x;
+            int rowEnd = (int) Math.min(frame.size().width, rowStart + faceCoordinates.width);
+
+            int colStart = faceCoordinates.y;
+            int colEnd = (int) Math.min(frame.size().height, colStart + faceCoordinates.height);
+
+            Mat face = frame.submat(colStart, colEnd, rowStart, rowEnd);
+            Imgproc.cvtColor(face, face, Imgproc.COLOR_BGR2GRAY);
+            Imgproc.resize(face, face, new Size(256, 256));
+            int nameID = faceRecognizer.recognize(face);
+
+            Imgproc.putText(frame, names.get(nameID), faceCoordinates.tl(), 2, 2, GREEN, 2);
         }
     }
 

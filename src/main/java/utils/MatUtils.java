@@ -2,7 +2,6 @@ package utils;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -70,38 +69,25 @@ public abstract class MatUtils {
     public static Image mat2Image(Mat frame) {
         MatOfByte buffer = new MatOfByte();
 
-        // IMG1
         imencode(".bmp", frame, buffer);
 
-        /*
-        // IMG2
-        ByteArrayInputStream imgStream = new ByteArrayInputStream(buffer.toArray());
-        BufferedImage bImage = SwingFXUtils.fromFXImage(new Image(imgStream), null);
+//        long startTime = System.currentTimeMillis();
 
-        // IMG 3
-        BufferedImage image3 = toBufferedImage(frame);
-        WritableImage fxImage3 = SwingFXUtils.toFXImage(image3, null);
-//        saveImage(image3, "IMG3-buffered-image");
-//        saveImage(fxImage3, "IMG3");
+//        toBufferedImage(frame);
 
-        // IMG 4
-        BufferedImage image4 = toBufferedImage2(frame);
-        WritableImage fxImage4 = SwingFXUtils.toFXImage(image4, null);
-//        saveImage(image4, "IMG4-buffered-image");
-//        saveImage(fxImage4, "IMG4");
-*/
+//        long endTime = System.currentTimeMillis();
+//        String executionTime = String.valueOf(endTime - startTime);
+//        Scalar green = new Scalar(0, 255, 0);
+//        Imgproc.putText(frame, executionTime, new Point(100, 100), 2, 2, green, 2);
 
-        // IMG 5
-        BufferedImage image5 = matToBufferedImage(frame);
-        WritableImage fxImage5 = SwingFXUtils.toFXImage(image5, null);
-//        saveImage(image5, "IMG5-buffered-image");
-//        saveImage(fxImage5, "IMG5");
+        BufferedImage bufferedImage = toBufferedImage(frame);
 
-        return fxImage5;
+        return SwingFXUtils.toFXImage(bufferedImage, null);
     }
 
     /**
      * Converts/writes a Mat into a BufferedImage.
+     * Execution time: ~3 msec
      *
      * @param matrix Mat of type CV_8UC3 or CV_8UC1
      * @return BufferedImage of type TYPE_3BYTE_BGR or TYPE_BYTE_GRAY
@@ -142,20 +128,31 @@ public abstract class MatUtils {
         return image;
     }
 
+    /**
+     * Execution time: ~1 msec
+     */
     public static BufferedImage toBufferedImage(Mat m) {
         int type = BufferedImage.TYPE_BYTE_GRAY;
+
         if (m.channels() > 1) {
             type = BufferedImage.TYPE_3BYTE_BGR;
         }
+
         int bufferSize = m.channels() * m.cols() * m.rows();
         byte[] b = new byte[bufferSize];
         m.get(0, 0, b); // get all the pixels
+
         BufferedImage image = new BufferedImage(m.cols(), m.rows(), type);
         final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
         System.arraycopy(b, 0, targetPixels, 0, b.length);
+
         return image;
     }
 
+
+    /**
+     * Processing time: ~14 msec
+     */
     public static BufferedImage toBufferedImage2(Mat image) {
         Mat imageTmp = image.clone();
 
